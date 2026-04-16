@@ -45,18 +45,19 @@ const AllBookings = () => {
   if (loading) return <div className="loading-screen"><div className="spinner"></div></div>;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">All Bookings</h1>
-      <div className="mb-4 flex gap-2">
-        <button className={`btn-sm ${filterStatus === 'ALL' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setFilterStatus('ALL')}>All</button>
+    <div className="admin-container">
+      <h1 className="admin-title">All Bookings</h1>
+
+      <div className="filter-bar">
+        <button className={`filter-btn ${filterStatus === 'ALL' ? 'active' : ''}`} onClick={() => setFilterStatus('ALL')}>All</button>
         {statuses.map(s => (
-          <button key={s} className={`btn-sm ${filterStatus === s ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setFilterStatus(s)}>{s}</button>
+          <button key={s} className={`filter-btn ${filterStatus === s ? 'active' : ''}`} onClick={() => setFilterStatus(s)}>{s}</button>
         ))}
       </div>
 
-      {error && <div className="alert alert-error mb-4">{error}</div>}
+      {error && <div className="alert error">{error}</div>}
 
-      <div className="table-container">
+      <div className="table-wrapper">
         <table className="data-table">
           <thead>
             <tr>
@@ -77,19 +78,31 @@ const AllBookings = () => {
                 <td>{new Date(b.startTime).toLocaleString()}</td>
                 <td>{new Date(b.endTime).toLocaleString()}</td>
                 <td>{b.purpose}</td>
-                <td><span className={`badge badge-${b.status.toLowerCase()}`}>{b.status}</span></td>
+                <td><span className={`badge status-${b.status.toLowerCase()}`}>{b.status}</span></td>
                 <td>
                   {b.status === 'PENDING' && (
-                    <>
-                      <button onClick={() => {
-                        const reason = prompt('Approval reason (optional)');
-                        updateStatus(b.id, 'APPROVED', reason);
-                      }} className="btn-primary btn-sm mr-2" disabled={actionLoading === b.id}>Approve</button>
-                      <button onClick={() => {
-                        const reason = prompt('Rejection reason');
-                        if (reason) updateStatus(b.id, 'REJECTED', reason);
-                      }} className="btn-danger btn-sm" disabled={actionLoading === b.id}>Reject</button>
-                    </>
+                    <div className="action-buttons">
+                      <button
+                        onClick={() => {
+                          const reason = prompt('Approval reason (optional)');
+                          updateStatus(b.id, 'APPROVED', reason);
+                        }}
+                        className="btn approve"
+                        disabled={actionLoading === b.id}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => {
+                          const reason = prompt('Rejection reason');
+                          if (reason) updateStatus(b.id, 'REJECTED', reason);
+                        }}
+                        className="btn reject"
+                        disabled={actionLoading === b.id}
+                      >
+                        Reject
+                      </button>
+                    </div>
                   )}
                 </td>
               </tr>

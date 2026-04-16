@@ -3,7 +3,7 @@ import { useAuth } from '../components/context/AuthContext';
 
 const Sidebar = () => {
   const { user } = useAuth();
-  const isAdmin = user?.roles.includes('ROLE_ADMIN');
+  const isAdmin = user?.roles?.includes('ROLE_ADMIN');
 
   const userLinks = [
     { to: '/dashboard', label: 'Dashboard' },
@@ -14,7 +14,7 @@ const Sidebar = () => {
   ];
 
   const adminLinks = [
-    { to: '/admin', label: 'Admin Dashboard' },
+    
     { to: '/admin/resources', label: 'Manage Resources' },
     { to: '/admin/bookings', label: 'All Bookings' },
     { to: '/admin/tickets', label: 'All Tickets' },
@@ -24,15 +24,14 @@ const Sidebar = () => {
   const links = isAdmin ? [...userLinks, ...adminLinks] : userLinks;
 
   return (
-    <aside className="w-64 bg-gray-800 text-white min-h-screen p-4">
-      <nav className="space-y-2">
+    <aside className="sidebar">
+      <div className="sidebar-brand">Smart Campus</div>
+      <nav className="sidebar-nav">
         {links.map(link => (
           <NavLink
             key={link.to}
             to={link.to}
-            className={({ isActive }) =>
-              `block px-4 py-2 rounded hover:bg-gray-700 ${isActive ? 'bg-gray-700' : ''}`
-            }
+            className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
           >
             {link.label}
           </NavLink>

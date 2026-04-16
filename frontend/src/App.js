@@ -7,7 +7,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import OAuth2Redirect from './components/OAuth2Redirect';
 import UserDashboard from './components/UserDashboard';
-import AdminDashboard from './components/AdminDashboard';
+
 import PrivateRoute from './components/PrivateRoute';
 import MyBookings from './components/pages/MyBookings';
 import BookingForm from './components/pages/BookingForm';
@@ -49,11 +49,7 @@ function App() {
                 <UserDashboard />
               </PrivateRoute>
             } />
-            <Route path="/admin" element={
-              <PrivateRoute roles={['ROLE_ADMIN']}>
-                <AdminDashboard />
-              </PrivateRoute>
-            } />
+           
 
             {/* Placeholder routes – implement as needed */}
             <Route path="/bookings" element={<PrivateRoute><MyBookings /></PrivateRoute>} />

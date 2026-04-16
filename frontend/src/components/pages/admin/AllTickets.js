@@ -56,18 +56,19 @@ const AllTickets = () => {
   if (loading) return <div className="loading-screen"><div className="spinner"></div></div>;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">All Tickets</h1>
-      <div className="mb-4 flex flex-wrap gap-2">
-        <button className={`btn-sm ${filterStatus === 'ALL' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setFilterStatus('ALL')}>All</button>
+    <div className="admin-container">
+      <h1 className="admin-title">All Tickets</h1>
+
+      <div className="filter-bar">
+        <button className={`filter-btn ${filterStatus === 'ALL' ? 'active' : ''}`} onClick={() => setFilterStatus('ALL')}>All</button>
         {statuses.map(s => (
-          <button key={s} className={`btn-sm ${filterStatus === s ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setFilterStatus(s)}>{s}</button>
+          <button key={s} className={`filter-btn ${filterStatus === s ? 'active' : ''}`} onClick={() => setFilterStatus(s)}>{s}</button>
         ))}
       </div>
 
-      {error && <div className="alert alert-error mb-4">{error}</div>}
+      {error && <div className="alert error">{error}</div>}
 
-      <div className="table-container">
+      <div className="table-wrapper">
         <table className="data-table">
           <thead>
             <tr>
@@ -86,14 +87,20 @@ const AllTickets = () => {
                 <td>{t.id.slice(-6)}</td>
                 <td>{t.category}</td>
                 <td>{t.location}</td>
-                <td><span className={`badge ${t.priority === 'HIGH' ? 'badge-danger' : t.priority === 'MEDIUM' ? 'badge-warning' : 'badge-info'}`}>{t.priority}</span></td>
-                <td><span className={`badge badge-${t.status.toLowerCase()}`}>{t.status}</span></td>
+                <td><span className={`badge priority-${t.priority.toLowerCase()}`}>{t.priority}</span></td>
+                <td><span className={`badge status-${t.status.toLowerCase()}`}>{t.status}</span></td>
                 <td>{t.assignedTo ? users.find(u => u.id === t.assignedTo)?.name || t.assignedTo : 'Unassigned'}</td>
                 <td>
-                  <button onClick={() => { setSelectedTicket(t); setShowAssignModal(true); }} className="btn-secondary btn-sm mr-2">Assign</button>
-                  <select className="form-select text-sm w-32" onChange={e => updateTicketStatus(t.id, e.target.value)} value={t.status}>
-                    {statuses.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <div className="action-buttons">
+                    <button onClick={() => { setSelectedTicket(t); setShowAssignModal(true); }} className="btn assign">Assign</button>
+                    <select
+                      className="status-select"
+                      onChange={e => updateTicketStatus(t.id, e.target.value)}
+                      value={t.status}
+                    >
+                      {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -104,17 +111,19 @@ const AllTickets = () => {
       {/* Assign Modal */}
       {showAssignModal && (
         <div className="modal-overlay" onClick={() => setShowAssignModal(false)}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">Assign Technician</div>
             <div className="modal-body">
               <select className="form-select" value={selectedTech} onChange={e => setSelectedTech(e.target.value)}>
                 <option value="">Select technician</option>
-                {users.filter(u => u.roles.includes('ROLE_TECHNICIAN')).map(u => <option key={u.id} value={u.id}>{u.name} ({u.email})</option>)}
+                {users.filter(u => u.roles?.includes('ROLE_TECHNICIAN')).map(u => (
+                  <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
+                ))}
               </select>
             </div>
             <div className="modal-footer">
-              <button onClick={() => setShowAssignModal(false)} className="btn-secondary">Cancel</button>
-              <button onClick={assignTechnician} className="btn-primary">Assign</button>
+              <button onClick={() => setShowAssignModal(false)} className="btn cancel">Cancel</button>
+              <button onClick={assignTechnician} className="btn save">Assign</button>
             </div>
           </div>
         </div>

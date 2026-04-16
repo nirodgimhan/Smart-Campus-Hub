@@ -44,10 +44,10 @@ const ManageUsers = () => {
   if (loading) return <div className="loading-screen"><div className="spinner"></div></div>;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Manage Users</h1>
-      {error && <div className="alert alert-error mb-4">{error}</div>}
-      <div className="table-container">
+    <div className="admin-container">
+      <h1 className="admin-title">Manage Users</h1>
+      {error && <div className="alert error">{error}</div>}
+      <div className="table-wrapper">
         <table className="data-table">
           <thead>
             <tr>
@@ -63,22 +63,24 @@ const ManageUsers = () => {
                 <td>{user.name}</td>
                 <td>{user.email}</td>
                 <td>
-                  {['ADMIN', 'TECHNICIAN'].map(role => {
-                    const hasRole = user.roles.includes(`ROLE_${role}`);
-                    return (
-                      <button
-                        key={role}
-                        onClick={() => toggleRole(user.id, role, !hasRole)}
-                        disabled={updating === user.id}
-                        className={`badge mr-1 cursor-pointer ${hasRole ? 'badge-approved' : 'badge-secondary'}`}
-                      >
-                        {role} {hasRole ? '✓' : '+'}
-                      </button>
-                    );
-                  })}
+                  <div className="role-buttons">
+                    {['ADMIN', 'TECHNICIAN'].map(role => {
+                      const hasRole = user.roles?.includes(`ROLE_${role}`);
+                      return (
+                        <button
+                          key={role}
+                          onClick={() => toggleRole(user.id, role, !hasRole)}
+                          disabled={updating === user.id}
+                          className={`role-toggle ${hasRole ? 'active' : 'inactive'}`}
+                        >
+                          {role} {hasRole ? '✓' : '+'}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </td>
                 <td>
-                  <button onClick={() => deleteUser(user.id)} className="btn-danger btn-sm">Delete</button>
+                  <button onClick={() => deleteUser(user.id)} className="btn delete">Delete</button>
                 </td>
               </tr>
             ))}
