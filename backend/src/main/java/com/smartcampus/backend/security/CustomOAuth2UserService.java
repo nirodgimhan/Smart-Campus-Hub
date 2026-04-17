@@ -28,6 +28,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Value("${app.adminSecret}")
     private String adminSecret;
 
+    // List of admin emails (you can add more here)
+    private boolean isAdminEmail(String email) {
+        return email.equalsIgnoreCase("nirodgimhan356@gmail.com") ||
+                email.equalsIgnoreCase("pulinduhansaka517@gmail.com");
+    }
+
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         try {
@@ -55,6 +61,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 // Update name/picture in case they changed
                 user.setName(name);
                 user.setPictureUrl(picture);
+                // If this user should be admin but isn't yet, add the role
+                if (isAdminEmail(email) && !user.getRoles().contains("ROLE_ADMIN")) {
+                    user.getRoles().add("ROLE_ADMIN");
+                    logger.info("Added admin role to existing user: {}", email);
+                }
                 user = userRepository.save(user);
                 logger.info("Existing user logged in: {}", email);
             } else {
@@ -66,14 +77,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 // Assign roles
                 Set<String> roles = new HashSet<>();
                 roles.add("ROLE_USER");
-
-                // Check if this email should be admin (customize as needed)
-                if (email.equalsIgnoreCase("admin@campus.com")
-                        || email.equalsIgnoreCase("your-admin-email@gmail.com")) {
+                if (isAdminEmail(email)) {
                     roles.add("ROLE_ADMIN");
-                    logger.info("Admin role assigned to {}", email);
+                    logger.info("Admin role assigned to new user: {}", email);
                 }
-
                 user.setRoles(roles);
                 user = userRepository.save(user);
                 logger.info("New user created: {}", email);

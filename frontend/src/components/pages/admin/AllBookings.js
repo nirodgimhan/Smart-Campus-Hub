@@ -42,23 +42,23 @@ const AllBookings = () => {
   const filteredBookings = filterStatus === 'ALL' ? bookings : bookings.filter(b => b.status === filterStatus);
   const statuses = ['PENDING', 'APPROVED', 'REJECTED', 'CANCELLED'];
 
-  if (loading) return <div className="loading-screen"><div className="spinner"></div></div>;
+  if (loading) return <div className="allbookings-loader"><div className="allbookings-spinner"></div></div>;
 
   return (
-    <div className="admin-container">
-      <h1 className="admin-title">All Bookings</h1>
+    <div className="allbookings-container">
+      <h1 className="allbookings-title">All Bookings</h1>
 
-      <div className="filter-bar">
-        <button className={`filter-btn ${filterStatus === 'ALL' ? 'active' : ''}`} onClick={() => setFilterStatus('ALL')}>All</button>
+      <div className="allbookings-filter-bar">
+        <button className={`filter-chip ${filterStatus === 'ALL' ? 'active' : ''}`} onClick={() => setFilterStatus('ALL')}>All</button>
         {statuses.map(s => (
-          <button key={s} className={`filter-btn ${filterStatus === s ? 'active' : ''}`} onClick={() => setFilterStatus(s)}>{s}</button>
+          <button key={s} className={`filter-chip ${filterStatus === s ? 'active' : ''}`} onClick={() => setFilterStatus(s)}>{s}</button>
         ))}
       </div>
 
-      {error && <div className="alert error">{error}</div>}
+      {error && <div className="allbookings-alert error">{error}</div>}
 
-      <div className="table-wrapper">
-        <table className="data-table">
+      <div className="allbookings-table-wrapper">
+        <table className="allbookings-table">
           <thead>
             <tr>
               <th>Resource ID</th>
@@ -78,16 +78,16 @@ const AllBookings = () => {
                 <td>{new Date(b.startTime).toLocaleString()}</td>
                 <td>{new Date(b.endTime).toLocaleString()}</td>
                 <td>{b.purpose}</td>
-                <td><span className={`badge status-${b.status.toLowerCase()}`}>{b.status}</span></td>
+                <td><span className={`status-badge ${b.status.toLowerCase()}`}>{b.status}</span></td>
                 <td>
                   {b.status === 'PENDING' && (
-                    <div className="action-buttons">
+                    <div className="action-btn-group">
                       <button
                         onClick={() => {
                           const reason = prompt('Approval reason (optional)');
                           updateStatus(b.id, 'APPROVED', reason);
                         }}
-                        className="btn approve"
+                        className="btn-approve"
                         disabled={actionLoading === b.id}
                       >
                         Approve
@@ -97,7 +97,7 @@ const AllBookings = () => {
                           const reason = prompt('Rejection reason');
                           if (reason) updateStatus(b.id, 'REJECTED', reason);
                         }}
-                        className="btn reject"
+                        className="btn-reject"
                         disabled={actionLoading === b.id}
                       >
                         Reject

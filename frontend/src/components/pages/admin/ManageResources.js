@@ -85,16 +85,16 @@ const ManageResources = () => {
   if (loading) return <div className="loading-screen"><div className="spinner"></div></div>;
 
   return (
-    <div className="admin-container">
-      <div className="header-actions">
-        <h1 className="admin-title">Manage Resources</h1>
-        <button onClick={() => openModal()} className="btn add">+ Add Resource</button>
+    <div className="resources-admin-container">
+      <div className="resources-header-actions">
+        <h1 className="resources-admin-title">Manage Resources</h1>
+        <button onClick={() => openModal()} className="btn-resource-add">+ Add Resource</button>
       </div>
 
-      {error && <div className="alert error">{error}</div>}
+      {error && <div className="alert-resource error">{error}</div>}
 
-      <div className="table-wrapper">
-        <table className="data-table">
+      <div className="resources-table-wrapper">
+        <table className="resources-data-table">
           <thead>
             <tr>
               <th>Name</th>
@@ -112,11 +112,14 @@ const ManageResources = () => {
                 <td>{res.type.replace('_', ' ')}</td>
                 <td>{res.capacity}</td>
                 <td>{res.location}</td>
-                <td><span className={`badge status-${res.status.toLowerCase()}`}>{res.status}</span></td>
+                <td><span className={`resource-status-badge ${res.status === 'ACTIVE' ? 'status-active' : 'status-inactive'}`}>
+                    {res.status}
+                  </span>
+                </td>
                 <td>
-                  <div className="action-buttons">
-                    <button onClick={() => openModal(res)} className="btn edit">Edit</button>
-                    <button onClick={() => handleDelete(res.id)} className="btn delete">Delete</button>
+                  <div className="resource-action-buttons">
+                    <button onClick={() => openModal(res)} className="btn-resource-edit">Edit</button>
+                    <button onClick={() => handleDelete(res.id)} className="btn-resource-delete">Delete</button>
                   </div>
                 </td>
               </tr>
@@ -127,41 +130,41 @@ const ManageResources = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">{editingResource ? 'Edit Resource' : 'Add Resource'}</div>
+        <div className="resource-modal-overlay" onClick={closeModal}>
+          <div className="resource-modal" onClick={e => e.stopPropagation()}>
+            <div className="resource-modal-header">{editingResource ? 'Edit Resource' : 'Add Resource'}</div>
             <form onSubmit={handleSubmit}>
-              <div className="modal-body">
-                <div className="form-group">
+              <div className="resource-modal-body">
+                <div className="resource-form-group">
                   <label>Name</label>
-                  <input type="text" className="form-input" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+                  <input type="text" className="resource-form-input" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
                 </div>
-                <div className="form-group">
+                <div className="resource-form-group">
                   <label>Type</label>
-                  <select className="form-select" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} required>
+                  <select className="resource-form-select" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} required>
                     <option value="">Select type</option>
                     {resourceTypes.map(t => <option key={t} value={t}>{t.replace('_', ' ')}</option>)}
                   </select>
                 </div>
-                <div className="form-group">
+                <div className="resource-form-group">
                   <label>Capacity</label>
-                  <input type="number" className="form-input" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} required />
+                  <input type="number" className="resource-form-input" value={formData.capacity} onChange={e => setFormData({...formData, capacity: e.target.value})} required />
                 </div>
-                <div className="form-group">
+                <div className="resource-form-group">
                   <label>Location</label>
-                  <input type="text" className="form-input" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} required />
+                  <input type="text" className="resource-form-input" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} required />
                 </div>
-                <div className="form-group">
+                <div className="resource-form-group">
                   <label>Status</label>
-                  <select className="form-select" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+                  <select className="resource-form-select" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
                     <option value="ACTIVE">Active</option>
                     <option value="OUT_OF_SERVICE">Out of Service</option>
                   </select>
                 </div>
               </div>
-              <div className="modal-footer">
-                <button type="button" onClick={closeModal} className="btn cancel">Cancel</button>
-                <button type="submit" className="btn save">Save</button>
+              <div className="resource-modal-footer">
+                <button type="button" onClick={closeModal} className="btn-resource-cancel">Cancel</button>
+                <button type="submit" className="btn-resource-save">Save</button>
               </div>
             </form>
           </div>
