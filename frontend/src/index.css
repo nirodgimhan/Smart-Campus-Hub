@@ -42,6 +42,19 @@ body {
 }
 
 /* ------------------------------
+   BOOKING FORM PAGE – CUSTOM BACKGROUND
+   (only applies to pages with this class)
+------------------------------ */
+.booking-form-bg {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+/* ------------------------------
    HEADER (fixed)
 ------------------------------ */
 .app-header {
@@ -1051,6 +1064,10 @@ html {
     justify-content: center;
   }
 }
+
+
+
+
 
 
 
@@ -5133,4 +5150,327 @@ html {
     align-self: flex-end;
   }
 }
+
+
+
+/* ------------------------------
+   BOOKING FORM – FULL PAGE STYLING
+   Uses existing class names from your component
+------------------------------ */
+
+:root {
+  --booking-primary: #4f46e5;
+  --booking-primary-dark: #4338ca;
+  --booking-primary-light: #e0e7ff;
+  --booking-danger: #ef4444;
+  --booking-gray-50: #f9fafb;
+  --booking-gray-100: #f3f4f6;
+  --booking-gray-200: #e5e7eb;
+  --booking-gray-500: #6b7280;
+  --booking-gray-700: #374151;
+  --booking-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --booking-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --booking-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --booking-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --booking-radius: 1rem;
+  --booking-transition: all 0.2s ease;
+}
+
+/* Center the form vertically and horizontally */
+body {
+  margin: 0;
+ 
+  
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Override any default body padding/margin from other pages */
+body:has(.max-w-2xl) {
+  margin: 0;
+  padding: 0;
+}
+
+/* Container that holds the card – ensures full width centering */
+.max-w-2xl {
+  max-width: 42rem;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* The card itself */
+.card {
+  background: white;
+  border-radius: var(--booking-radius);
+  box-shadow: var(--booking-shadow-xl);
+  overflow: hidden;
+  transition: var(--booking-transition);
+  border: 1px solid rgba(79, 70, 229, 0.1);
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 25px 35px -12px rgba(0, 0, 0, 0.2);
+}
+
+/* Card header */
+.card-header {
+  padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+  border-bottom: 1px solid var(--booking-gray-200);
+  background: linear-gradient(to right, #ffffff, #faf9fe);
+}
+
+.card-header h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1e293b, var(--booking-primary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  margin-bottom: 0.25rem;
+}
+
+.card-header p {
+  color: var(--booking-gray-500);
+  font-size: 0.875rem;
+}
+
+/* Card body */
+.card-body {
+  padding: 1.5rem;
+}
+
+/* Alert / error */
+.alert {
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.alert-error {
+  background: #fee2e2;
+  border-left: 4px solid var(--booking-danger);
+  color: #b91c1c;
+}
+
+/* Form groups */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+  color: var(--booking-gray-700);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Inputs, selects, textareas */
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--booking-gray-200);
+  border-radius: 0.75rem;
+  font-size: 0.95rem;
+  transition: var(--booking-transition);
+  background: white;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--booking-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--booking-transition);
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--booking-primary), var(--booking-primary-dark));
+  color: white;
+  box-shadow: var(--booking-shadow-sm);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--booking-shadow-md);
+  background: linear-gradient(135deg, var(--booking-primary-dark), #3730a3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: var(--booking-gray-100);
+  color: var(--booking-gray-700);
+  border: 1px solid var(--booking-gray-200);
+}
+
+.btn-secondary:hover {
+  background: var(--booking-gray-200);
+  transform: translateY(-1px);
+}
+
+/* Utilities (matches Tailwind classes in your component) */
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+.p-6 {
+  padding: 1.5rem;
+}
+.mb-4 {
+  margin-bottom: 1rem;
+}
+.text-center {
+  text-align: center;
+}
+.py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+.mt-2 {
+  margin-top: 0.5rem;
+}
+.mr-2 {
+  margin-right: 0.5rem;
+}
+.flex {
+  display: flex;
+}
+.justify-end {
+  justify-content: flex-end;
+}
+.space-x-3 > * + * {
+  margin-left: 0.75rem;
+}
+.pt-4 {
+  padding-top: 1rem;
+}
+.grid {
+  display: grid;
+}
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+.gap-4 {
+  gap: 1rem;
+}
+@media (min-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.text-xl {
+  font-size: 1.25rem;
+}
+.font-bold {
+  font-weight: 700;
+}
+.text-sm {
+  font-size: 0.875rem;
+}
+.text-gray-500 {
+  color: var(--booking-gray-500);
+}
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.spinner.mx-auto {
+  width: 2rem;
+  height: 2rem;
+  border-width: 3px;
+  border-top-color: var(--booking-primary);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .max-w-2xl {
+    padding: 1rem;
+  }
+  .card-header {
+    padding: 1rem 1rem 0.25rem 1rem;
+  }
+  .card-body {
+    padding: 1rem;
+  }
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+  .flex.justify-end {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .space-x-3 > * + * {
+    margin-left: 0;
+  }
+}
+
 
