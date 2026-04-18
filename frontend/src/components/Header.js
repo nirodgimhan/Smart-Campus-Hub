@@ -66,10 +66,11 @@ const Header = () => {
 
         <div className="desktop-nav">
           <Link to="/" className="nav-link">Home</Link>
+          {/* Browse Resources is visible ONLY after login */}
           {user && (
             <>
-              <Link to="/bookings/new" className="nav-link">New Booking</Link>
-              <Link to="/tickets/new" className="nav-link">New Ticket</Link>
+              <Link to="/resources" className="nav-link">Browse Resources</Link>
+              {/* New Ticket link removed */}
             </>
           )}
           <Link to="/about" className="nav-link">About Us</Link>

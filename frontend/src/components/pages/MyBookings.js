@@ -9,38 +9,122 @@ const MyBookings = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cancelLoading, setCancelLoading] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [resourcesMap, setResourcesMap] = useState({}); // { resourceId: { name, type, location, capacity } }
 
+  // Filter states
+  const [filters, setFilters] = useState({
+    resourceName: '',
+    resourceType: '',
+    location: '',
+    minCapacity: '',
+  });
+
+  // Fetch all resources and user bookings
   useEffect(() => {
-    fetchBookings();
+    fetchResourcesAndBookings();
   }, []);
 
-  useEffect(() => {
-    // Filter bookings based on search term
-    if (!searchTerm.trim()) {
-      setFilteredBookings(bookings);
-    } else {
-      const lowercasedSearch = searchTerm.toLowerCase();
-      const filtered = bookings.filter(booking =>
-        booking.resourceId?.toLowerCase().includes(lowercasedSearch) ||
-        booking.purpose?.toLowerCase().includes(lowercasedSearch) ||
-        booking.status?.toLowerCase().includes(lowercasedSearch)
-      );
-      setFilteredBookings(filtered);
+  const fetchResourcesAndBookings = async () => {
+    try {
+      setLoading(true);
+      // Fetch all resources
+      const resourcesRes = await api.get('/resources');
+      const resources = resourcesRes.data;
+      const map = {};
+      resources.forEach(res => {
+        map[res.id] = {
+          name: res.name,
+          type: res.type,
+          location: res.location,
+          capacity: res.capacity
+        };
+      });
+      setResourcesMap(map);
+
+      // Fetch user's bookings
+      const bookingsRes = await api.get('/bookings');
+      setBookings(bookingsRes.data);
+      setFilteredBookings(bookingsRes.data);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to fetch data', err);
+      setError('Unable to load your bookings. Please try again later.');
+    } finally {
+      setLoading(false);
     }
-  }, [searchTerm, bookings]);
+  };
+
+  // Apply filters whenever filters or bookings/resources change
+  useEffect(() => {
+    if (!bookings.length) {
+      setFilteredBookings([]);
+      return;
+    }
+
+    let filtered = [...bookings];
+
+    // Filter by resource name
+    if (filters.resourceName.trim()) {
+      const nameLower = filters.resourceName.toLowerCase();
+      filtered = filtered.filter(booking => {
+        const res = resourcesMap[booking.resourceId];
+        return res?.name?.toLowerCase().includes(nameLower);
+      });
+    }
+
+    // Filter by resource type
+    if (filters.resourceType) {
+      filtered = filtered.filter(booking => {
+        const res = resourcesMap[booking.resourceId];
+        return res?.type === filters.resourceType;
+      });
+    }
+
+    // Filter by location
+    if (filters.location.trim()) {
+      const locLower = filters.location.toLowerCase();
+      filtered = filtered.filter(booking => {
+        const res = resourcesMap[booking.resourceId];
+        return res?.location?.toLowerCase().includes(locLower);
+      });
+    }
+
+    // Filter by minimum capacity
+    if (filters.minCapacity) {
+      const minCap = parseInt(filters.minCapacity, 10);
+      if (!isNaN(minCap)) {
+        filtered = filtered.filter(booking => {
+          const res = resourcesMap[booking.resourceId];
+          return res?.capacity >= minCap;
+        });
+      }
+    }
+
+    setFilteredBookings(filtered);
+  }, [filters, bookings, resourcesMap]);
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      resourceName: '',
+      resourceType: '',
+      location: '',
+      minCapacity: '',
+    });
+  };
 
   const fetchBookings = async () => {
     try {
       const response = await api.get('/bookings');
       setBookings(response.data);
-      setFilteredBookings(response.data);
       setError(null);
     } catch (err) {
       console.error('Failed to fetch bookings', err);
       setError('Unable to load your bookings. Please try again later.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -78,6 +162,9 @@ const MyBookings = () => {
     });
   };
 
+  // Get unique resource types from resourcesMap for dropdown
+  const resourceTypes = [...new Set(Object.values(resourcesMap).map(r => r.type))];
+
   if (loading) {
     return (
       <div className="bookings-loader">
@@ -105,27 +192,62 @@ const MyBookings = () => {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="search-wrapper">
-        <div className="search-box">
-          <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search by resource, purpose, or status..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-          />
-          {searchTerm && (
-            <button className="search-clear" onClick={() => setSearchTerm('')}>
-              ✕
-            </button>
-          )}
+      {/* Advanced Filters Section */}
+      <div className="filters-card">
+        <div className="filters-grid">
+          <div className="filter-group">
+            <label>Resource Name</label>
+            <input
+              type="text"
+              name="resourceName"
+              value={filters.resourceName}
+              onChange={handleFilterChange}
+              placeholder="e.g., Auditorium, Lab 101"
+              className="filter-input"
+            />
+          </div>
+          <div className="filter-group">
+            <label>Resource Type</label>
+            <select
+              name="resourceType"
+              value={filters.resourceType}
+              onChange={handleFilterChange}
+              className="filter-select"
+            >
+              <option value="">All types</option>
+              {resourceTypes.map(type => (
+                <option key={type} value={type}>{type.replace('_', ' ')}</option>
+              ))}
+            </select>
+          </div>
+          <div className="filter-group">
+            <label>Location</label>
+            <input
+              type="text"
+              name="location"
+              value={filters.location}
+              onChange={handleFilterChange}
+              placeholder="e.g., Building A, Floor 2"
+              className="filter-input"
+            />
+          </div>
+          <div className="filter-group">
+            <label>Min. Capacity</label>
+            <input
+              type="number"
+              name="minCapacity"
+              value={filters.minCapacity}
+              onChange={handleFilterChange}
+              placeholder="e.g., 30"
+              className="filter-input"
+            />
+          </div>
         </div>
-        <div className="booking-stats">
-          <span>{filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''} found</span>
+        <div className="filter-actions">
+          <button onClick={clearFilters} className="btn-clear-filters">Clear all filters</button>
+          <div className="booking-stats">
+            {filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''} found
+          </div>
         </div>
       </div>
 
@@ -135,11 +257,11 @@ const MyBookings = () => {
           <div className="empty-icon">📅</div>
           <h3>No bookings found</h3>
           <p>
-            {searchTerm
-              ? `No results match "${searchTerm}". Try a different search term.`
+            {Object.values(filters).some(v => v) 
+              ? "No bookings match your filters. Try clearing them."
               : "You haven't made any bookings yet."}
           </p>
-          {!searchTerm && (
+          {!Object.values(filters).some(v => v) && (
             <button onClick={() => window.location.href = '/resources'} className="btn-browse">
               Browse Resources
             </button>
@@ -148,6 +270,7 @@ const MyBookings = () => {
       ) : (
         <div className="bookings-grid">
           {filteredBookings.map((booking) => {
+            const resourceInfo = resourcesMap[booking.resourceId] || { name: 'Unknown Resource', type: 'N/A', location: 'N/A', capacity: 'N/A' };
             const statusConfig = getStatusConfig(booking.status);
             const isPending = booking.status === 'PENDING';
             const isApproved = booking.status === 'APPROVED';
@@ -162,7 +285,12 @@ const MyBookings = () => {
                   <span className="booking-id">ID: {booking.id.slice(-6)}</span>
                 </div>
                 <div className="card-body">
-                  <h3 className="resource-name">{booking.resourceId}</h3>
+                  <h3 className="resource-name">{resourceInfo.name}</h3>
+                  <div className="resource-meta">
+                    <span className="resource-type">{resourceInfo.type.replace('_', ' ')}</span>
+                    <span className="resource-location">📍 {resourceInfo.location}</span>
+                    <span className="resource-capacity">👥 Capacity: {resourceInfo.capacity}</span>
+                  </div>
                   <div className="booking-detail">
                     <svg className="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
