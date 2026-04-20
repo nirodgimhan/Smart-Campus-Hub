@@ -35,7 +35,7 @@ const Sidebar = () => {
   };
 
   const handleSettings = () => {
-    navigate('/profile');
+    navigate('/settings');
   };
 
   return (

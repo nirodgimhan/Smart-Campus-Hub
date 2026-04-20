@@ -11,7 +11,9 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Document(collection = "users")
@@ -39,4 +41,27 @@ public class User {
 
     @LastModifiedDate
     private Instant updatedAt;
+
+    // ===== New fields for settings =====
+    private Map<String, Boolean> notificationPreferences; // { "email": true, "push": true }
+    private String profileVisibility = "public"; // "public" or "private"
+    private String language = "en"; // "en", "si", "ta"
+
+    // Getters with default values for backward compatibility
+    public Map<String, Boolean> getNotificationPreferences() {
+        if (notificationPreferences == null) {
+            notificationPreferences = new HashMap<>();
+            notificationPreferences.put("email", true);
+            notificationPreferences.put("push", true);
+        }
+        return notificationPreferences;
+    }
+
+    public String getProfileVisibility() {
+        return profileVisibility != null ? profileVisibility : "public";
+    }
+
+    public String getLanguage() {
+        return language != null ? language : "en";
+    }
 }

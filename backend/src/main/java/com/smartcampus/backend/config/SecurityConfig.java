@@ -66,9 +66,17 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/public/**", "/uploads/**", "/error", "/favicon.ico")
+                        // Public endpoints
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/public/**", "/uploads/**",
+                                "/error", "/favicon.ico", "/oauth2/**", "/login/oauth2/**")
                         .permitAll()
+                        // Authenticated user endpoints (require JWT)
+                        .requestMatchers("/api/auth/me", "/api/auth/update", "/api/auth/preferences",
+                                "/api/auth/change-password", "/api/auth/account")
+                        .authenticated()
+                        // Admin only
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // Everything else requires authentication
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))

@@ -23,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -145,5 +146,65 @@ public class AuthController {
 
                 userRepository.save(user);
                 return ResponseEntity.ok(user);
+        }
+
+        // ===== NEW: GET USER PREFERENCES =====
+        @GetMapping("/preferences")
+        public ResponseEntity<?> getUserPreferences(@AuthenticationPrincipal UserDetailsImpl currentUser) {
+                User user = userService.getUserById(currentUser.getId());
+                Map<String, Object> prefs = new HashMap<>();
+                prefs.put("notifications", user.getNotificationPreferences());
+                prefs.put("profileVisibility", user.getProfileVisibility());
+                prefs.put("language", user.getLanguage());
+                return ResponseEntity.ok(prefs);
+        }
+
+        // ===== NEW: UPDATE USER PREFERENCES =====
+        @PutMapping("/preferences")
+        public ResponseEntity<?> updateUserPreferences(@AuthenticationPrincipal UserDetailsImpl currentUser,
+                        @RequestBody Map<String, Object> preferences) {
+                User user = userService.getUserById(currentUser.getId());
+                if (preferences.containsKey("notifications")) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Boolean> notifMap = (Map<String, Boolean>) preferences.get("notifications");
+                        user.setNotificationPreferences(notifMap);
+                }
+                if (preferences.containsKey("profileVisibility")) {
+                        user.setProfileVisibility((String) preferences.get("profileVisibility"));
+                }
+                if (preferences.containsKey("language")) {
+                        user.setLanguage((String) preferences.get("language"));
+                }
+                userRepository.save(user);
+                return ResponseEntity.ok().build();
+        }
+
+        // ===== NEW: CHANGE PASSWORD =====
+        @PostMapping("/change-password")
+        public ResponseEntity<?> changePassword(@AuthenticationPrincipal UserDetailsImpl currentUser,
+                        @RequestBody Map<String, String> request) {
+                String oldPassword = request.get("oldPassword");
+                String newPassword = request.get("newPassword");
+
+                if (oldPassword == null || newPassword == null) {
+                        return ResponseEntity.badRequest()
+                                        .body(new MessageResponseDTO("Old and new passwords are required"));
+                }
+
+                User user = userService.getUserById(currentUser.getId());
+                if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+                        return ResponseEntity.badRequest().body(new MessageResponseDTO("Incorrect old password"));
+                }
+
+                user.setPassword(passwordEncoder.encode(newPassword));
+                userRepository.save(user);
+                return ResponseEntity.ok(new MessageResponseDTO("Password changed successfully"));
+        }
+
+        // ===== NEW: DELETE ACCOUNT =====
+        @DeleteMapping("/account")
+        public ResponseEntity<?> deleteAccount(@AuthenticationPrincipal UserDetailsImpl currentUser) {
+                userRepository.deleteById(currentUser.getId());
+                return ResponseEntity.ok(new MessageResponseDTO("Account deleted successfully"));
         }
 }
