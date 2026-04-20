@@ -39,15 +39,24 @@ const AllTickets = () => {
 
   const assignTechnician = async () => {
     if (!selectedTech) return;
-    await api.put(`/tickets/${selectedTicket.id}/assign?technicianId=${selectedTech}`);
-    fetchTickets();
-    setShowAssignModal(false);
+    try {
+      await api.put(`/tickets/${selectedTicket.id}/assign?technicianId=${selectedTech}`);
+      fetchTickets();
+      setShowAssignModal(false);
+      setSelectedTech('');
+    } catch (err) {
+      alert('Failed to assign technician');
+    }
   };
 
   const updateTicketStatus = async (id, newStatus, resolutionNotes = '', reason = '') => {
-    await api.put(`/tickets/${id}/status`, { status: newStatus, resolutionNotes, reason });
-    fetchTickets();
-    setStatusUpdate({ status: '', resolution: '' });
+    try {
+      await api.put(`/tickets/${id}/status`, { status: newStatus, resolutionNotes, reason });
+      fetchTickets();
+      setStatusUpdate({ status: '', resolution: '' });
+    } catch (err) {
+      alert('Failed to update ticket status');
+    }
   };
 
   const filteredTickets = filterStatus === 'ALL' ? tickets : tickets.filter(t => t.status === filterStatus);
@@ -57,8 +66,15 @@ const AllTickets = () => {
 
   return (
     <div className="admin-container">
-      <h1 className="admin-title">All Tickets</h1>
+      {/* Gradient header matching other admin pages */}
+      <div className="tickets-header">
+        <div className="tickets-title-section">
+          <h1 className="admin-title">All Tickets</h1>
+          <p className="tickets-subtitle">View and manage all support tickets</p>
+        </div>
+      </div>
 
+      {/* Filter Bar */}
       <div className="filter-bar">
         <button className={`filter-btn ${filterStatus === 'ALL' ? 'active' : ''}`} onClick={() => setFilterStatus('ALL')}>All</button>
         {statuses.map(s => (
@@ -84,15 +100,26 @@ const AllTickets = () => {
           <tbody>
             {filteredTickets.map(t => (
               <tr key={t.id}>
-                <td>{t.id.slice(-6)}</td>
-                <td>{t.category}</td>
-                <td>{t.location}</td>
-                <td><span className={`badge priority-${t.priority.toLowerCase()}`}>{t.priority}</span></td>
-                <td><span className={`badge status-${t.status.toLowerCase()}`}>{t.status}</span></td>
-                <td>{t.assignedTo ? users.find(u => u.id === t.assignedTo)?.name || t.assignedTo : 'Unassigned'}</td>
-                <td>
+                <td data-label="ID">{t.id.slice(-6)}</td>
+                <td data-label="Category">{t.category}</td>
+                <td data-label="Location">{t.location}</td>
+                <td data-label="Priority">
+                  <span className={`badge priority-${t.priority.toLowerCase()}`}>{t.priority}</span>
+                </td>
+                <td data-label="Status">
+                  <span className={`badge status-${t.status.toLowerCase()}`}>{t.status}</span>
+                </td>
+                <td data-label="Assigned To">
+                  {t.assignedTo ? users.find(u => u.id === t.assignedTo)?.name || t.assignedTo : 'Unassigned'}
+                </td>
+                <td data-label="Actions">
                   <div className="action-buttons">
-                    <button onClick={() => { setSelectedTicket(t); setShowAssignModal(true); }} className="btn assign">Assign</button>
+                    <button 
+                      onClick={() => { setSelectedTicket(t); setShowAssignModal(true); }} 
+                      className="btn assign"
+                    >
+                      Assign
+                    </button>
                     <select
                       className="status-select"
                       onChange={e => updateTicketStatus(t.id, e.target.value)}
@@ -114,7 +141,11 @@ const AllTickets = () => {
           <div className="modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">Assign Technician</div>
             <div className="modal-body">
-              <select className="form-select" value={selectedTech} onChange={e => setSelectedTech(e.target.value)}>
+              <select 
+                className="form-select" 
+                value={selectedTech} 
+                onChange={e => setSelectedTech(e.target.value)}
+              >
                 <option value="">Select technician</option>
                 {users.filter(u => u.roles?.includes('ROLE_TECHNICIAN')).map(u => (
                   <option key={u.id} value={u.id}>{u.name} ({u.email})</option>

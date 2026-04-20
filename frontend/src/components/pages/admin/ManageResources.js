@@ -86,9 +86,15 @@ const ManageResources = () => {
 
   return (
     <div className="resources-admin-container">
-      <div className="resources-header-actions">
-        <h1 className="resources-admin-title">Manage Resources</h1>
-        <button onClick={() => openModal()} className="btn-resource-add">+ Add Resource</button>
+      {/* New gradient header matching bookings/tickets style */}
+      <div className="resources-header">
+        <div className="resources-title-section">
+          <h1 className="resources-title">Manage Resources</h1>
+          <p className="resources-subtitle">Add, edit or remove campus resources</p>
+        </div>
+        <button onClick={() => openModal()} className="btn-resource-add">
+          + Add Resource
+        </button>
       </div>
 
       {error && <div className="alert-resource error">{error}</div>}
@@ -112,7 +118,8 @@ const ManageResources = () => {
                 <td>{res.type.replace('_', ' ')}</td>
                 <td>{res.capacity}</td>
                 <td>{res.location}</td>
-                <td><span className={`resource-status-badge ${res.status === 'ACTIVE' ? 'status-active' : 'status-inactive'}`}>
+                <td>
+                  <span className={`resource-status-badge ${res.status === 'ACTIVE' ? 'status-active' : 'status-inactive'}`}>
                     {res.status}
                   </span>
                 </td>

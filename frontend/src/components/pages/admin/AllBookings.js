@@ -46,8 +46,15 @@ const AllBookings = () => {
 
   return (
     <div className="allbookings-container">
-      <h1 className="allbookings-title">All Bookings</h1>
+      {/* New gradient header matching other admin pages */}
+      <div className="allbookings-header">
+        <div className="allbookings-title-section">
+          <h1 className="allbookings-title">All Bookings</h1>
+          <p className="allbookings-subtitle">View and manage all campus resource bookings</p>
+        </div>
+      </div>
 
+      {/* Filter Bar */}
       <div className="allbookings-filter-bar">
         <button className={`filter-chip ${filterStatus === 'ALL' ? 'active' : ''}`} onClick={() => setFilterStatus('ALL')}>All</button>
         {statuses.map(s => (
