@@ -16,7 +16,6 @@ const BookingForm = () => {
     expectedAttendees: '',
   });
 
-  // Fetch available resources on component mount
   useEffect(() => {
     fetchResources();
   }, []);
@@ -37,36 +36,19 @@ const BookingForm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user types
     if (error) setError('');
   };
 
   const validateForm = () => {
-    if (!formData.resourceId) {
-      setError('Please select a resource');
-      return false;
-    }
-    if (!formData.startTime) {
-      setError('Please select start date & time');
-      return false;
-    }
-    if (!formData.endTime) {
-      setError('Please select end date & time');
-      return false;
-    }
+    if (!formData.resourceId) { setError('Please select a resource'); return false; }
+    if (!formData.startTime) { setError('Please select start date & time'); return false; }
+    if (!formData.endTime) { setError('Please select end date & time'); return false; }
     const start = new Date(formData.startTime);
     const end = new Date(formData.endTime);
-    if (end <= start) {
-      setError('End time must be after start time');
-      return false;
-    }
-    if (!formData.purpose.trim()) {
-      setError('Please enter a purpose');
-      return false;
-    }
+    if (end <= start) { setError('End time must be after start time'); return false; }
+    if (!formData.purpose.trim()) { setError('Please enter a purpose'); return false; }
     if (formData.expectedAttendees && formData.expectedAttendees < 1) {
-      setError('Expected attendees must be at least 1');
-      return false;
+      setError('Expected attendees must be at least 1'); return false;
     }
     return true;
   };
@@ -74,7 +56,6 @@ const BookingForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-
     setSubmitting(true);
     try {
       await api.post('/bookings', {
@@ -84,7 +65,7 @@ const BookingForm = () => {
         purpose: formData.purpose,
         expectedAttendees: formData.expectedAttendees ? parseInt(formData.expectedAttendees) : null,
       });
-      navigate('/bookings'); // Redirect to My Bookings page
+      navigate('/bookings');
     } catch (err) {
       console.error('Booking failed', err);
       const message = err.response?.data?.message || 'Failed to create booking. Please try again.';
@@ -95,28 +76,51 @@ const BookingForm = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <div className="card">
-        <div className="card-header">
-          <h2 className="text-xl font-bold">Request a Booking</h2>
-          <p className="text-sm text-gray-500">Fill in the details to book a resource</p>
+    <div className="booking-page">
+
+      {/* ── Hero Banner ── */}
+      <div className="booking-hero">
+        <span className="booking-hero-icon">🏛️</span>
+        <h1>Request a Booking</h1>
+        <p>Reserve a campus resource — rooms, labs, equipment, and more.</p>
+      </div>
+
+      {/* ── Form Card ── */}
+      <div className="booking-card">
+
+        {/* Card Header */}
+        <div className="booking-card-header">
+          <div className="booking-card-header-icon">📋</div>
+          <div className="booking-card-header-text">
+            <h2>Booking Details</h2>
+            <p>Fill in the details below to submit your request</p>
+          </div>
         </div>
-        <div className="card-body">
+
+        <div className="booking-card-body">
+
+          {/* Error Alert */}
           {error && (
-            <div className="alert alert-error mb-4">
-              {error}
+            <div className="alert alert-error" style={{ marginBottom: '1.25rem' }}>
+              ⚠️ {error}
             </div>
           )}
 
           {loading ? (
-            <div className="text-center py-8">
-              <div className="spinner mx-auto"></div>
-              <p className="mt-2 text-gray-500">Loading resources...</p>
+            <div className="booking-loading">
+              <div className="spinner"></div>
+              <p>Loading available resources…</p>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="booking-form">
+
+              {/* Resource */}
+              <span className="booking-section-label">📦 Resource</span>
               <div className="form-group">
-                <label className="form-label">Resource *</label>
+                <label className="form-label">
+                  Select Resource
+                  <span className="label-required">*</span>
+                </label>
                 <select
                   name="resourceId"
                   value={formData.resourceId}
@@ -124,18 +128,23 @@ const BookingForm = () => {
                   className="form-select"
                   required
                 >
-                  <option value="">-- Select a resource --</option>
+                  <option value="">— Choose a resource —</option>
                   {resources.map(res => (
                     <option key={res.id} value={res.id}>
-                      {res.name} ({res.type}) - Capacity: {res.capacity}
+                      {res.name} ({res.type}) · Capacity: {res.capacity}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Date & Time */}
+              <span className="booking-section-label">🕐 Schedule</span>
+              <div className="booking-date-grid">
                 <div className="form-group">
-                  <label className="form-label">Start Date & Time *</label>
+                  <label className="form-label">
+                    Start Date & Time
+                    <span className="label-required">*</span>
+                  </label>
                   <input
                     type="datetime-local"
                     name="startTime"
@@ -146,7 +155,10 @@ const BookingForm = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">End Date & Time *</label>
+                  <label className="form-label">
+                    End Date & Time
+                    <span className="label-required">*</span>
+                  </label>
                   <input
                     type="datetime-local"
                     name="endTime"
@@ -158,21 +170,30 @@ const BookingForm = () => {
                 </div>
               </div>
 
+              {/* Purpose */}
+              <span className="booking-section-label">📝 Details</span>
               <div className="form-group">
-                <label className="form-label">Purpose *</label>
+                <label className="form-label">
+                  Purpose
+                  <span className="label-required">*</span>
+                </label>
                 <textarea
                   name="purpose"
                   value={formData.purpose}
                   onChange={handleChange}
                   rows="3"
                   className="form-textarea"
-                  placeholder="e.g., Lecture, Meeting, Project work..."
+                  placeholder="e.g., Lecture, Team meeting, Project work, Workshop…"
                   required
                 />
               </div>
 
+              {/* Expected Attendees */}
               <div className="form-group">
-                <label className="form-label">Expected Attendees (optional)</label>
+                <label className="form-label">
+                  Expected Attendees
+                  <span className="label-optional">(optional)</span>
+                </label>
                 <input
                   type="number"
                   name="expectedAttendees"
@@ -180,32 +201,36 @@ const BookingForm = () => {
                   onChange={handleChange}
                   min="1"
                   className="form-input"
+                  placeholder="e.g., 20"
                 />
+                <p className="booking-hint">ℹ️ Leave blank if not applicable</p>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4">
+              {/* Actions */}
+              <div className="booking-form-actions">
                 <button
                   type="button"
                   onClick={() => navigate('/resources')}
-                  className="btn-secondary"
+                  className="booking-btn-cancel"
                 >
-                  Cancel
+                  ← Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="btn-primary"
+                  className="booking-btn-submit"
                 >
                   {submitting ? (
                     <>
-                      <span className="spinner mr-2"></span>
-                      Submitting...
+                      <span className="spinner" style={{ width: 18, height: 18, borderWidth: 2 }}></span>
+                      Submitting…
                     </>
                   ) : (
-                    'Submit Request'
+                    '✓ Submit Request'
                   )}
                 </button>
               </div>
+
             </form>
           )}
         </div>
