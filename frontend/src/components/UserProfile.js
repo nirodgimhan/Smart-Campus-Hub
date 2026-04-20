@@ -3,98 +3,168 @@ import { useAuth } from '../components/context/AuthContext';
 import api from '../components/services/api';
 
 const UserProfile = () => {
-  const { user: authUser } = useAuth();
+  const { user: authUser, login } = useAuth();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ bookings: 0, activeTickets: 0 });
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editForm, setEditForm] = useState({ name: '', email: '' });
+  const [editLoading, setEditLoading] = useState(false);
+  const [editError, setEditError] = useState('');
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await api.get('/auth/me');
-        setUser(response.data);
-      } catch (error) {
-        console.error('Failed to fetch profile', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserProfile();
+    fetchUserData();
   }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const [profileRes, bookingsRes, ticketsRes] = await Promise.all([
+        api.get('/auth/me'),
+        api.get('/bookings'),
+        api.get('/tickets'),
+      ]);
+      setUser(profileRes.data);
+      const activeTickets = ticketsRes.data.filter(
+        ticket => ticket.status === 'OPEN' || ticket.status === 'IN_PROGRESS'
+      ).length;
+      setStats({
+        bookings: bookingsRes.data.length,
+        activeTickets: activeTickets,
+      });
+    } catch (error) {
+      console.error('Failed to fetch user profile data', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openEditModal = () => {
+    setEditForm({ name: user.name, email: user.email });
+    setEditError('');
+    setShowEditModal(true);
+  };
+
+  const closeModal = () => {
+    setShowEditModal(false);
+    setEditForm({ name: '', email: '' });
+    setEditLoading(false);
+    setEditError('');
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    if (!editForm.name.trim() || !editForm.email.trim()) {
+      setEditError('Name and email are required');
+      return;
+    }
+    setEditLoading(true);
+    setEditError('');
+    try {
+      const response = await api.put('/auth/update', editForm);
+      setUser(response.data);
+      closeModal();
+      alert('Profile updated successfully');
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Failed to update profile';
+      setEditError(msg);
+    } finally {
+      setEditLoading(false);
+    }
+  };
 
   if (loading) return <div className="loading-screen">Loading profile...</div>;
 
   return (
-    <main className="flex-1 p-8 overflow-auto">
+    <div className="profile-container">
       {/* Profile header */}
-      <div className="bg-white rounded-2xl shadow-sm p-6 flex flex-wrap items-center gap-4 mb-8">
+      <div className="profile-header">
         <img
           src={user?.pictureUrl || 'https://randomuser.me/api/portraits/lego/1.jpg'}
           alt={user?.name}
-          className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+          className="profile-avatar"
         />
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">{user?.name}</h1>
-          <p className="text-gray-500">{user?.email}</p>
+        <div className="profile-info">
+          <h1>{user?.name}</h1>
+          <p>{user?.email}</p>
         </div>
-        <div className="ml-auto bg-green-100 text-green-800 px-4 py-1.5 rounded-full text-sm font-semibold">
-          Active Member
-        </div>
+        <div className="profile-badge">Active Member</div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="profile-grid">
         {/* Personal Information */}
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <h3 className="text-lg font-semibold border-l-4 border-blue-500 pl-3 mb-4">
-            Personal Information
-          </h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex">
-              <span className="w-32 text-gray-500">Full name:</span>
-              <span>{user?.name}</span>
-            </div>
-            <div className="flex">
-              <span className="w-32 text-gray-500">Email:</span>
-              <span>{user?.email}</span>
-            </div>
-            <div className="flex">
-              <span className="w-32 text-gray-500">Member since:</span>
-              <span>{new Date(user?.createdAt).toLocaleDateString()}</span>
-            </div>
+        <div className="profile-card">
+          <h3>Personal Information</h3>
+          <div className="info-row">
+            <span className="info-label">Full name:</span>
+            <span className="info-value">{user?.name}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">Email:</span>
+            <span className="info-value">{user?.email}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">Member since:</span>
+            <span className="info-value">{new Date(user?.createdAt).toLocaleDateString()}</span>
           </div>
         </div>
 
         {/* Account Statistics */}
-        <div className="bg-white rounded-2xl shadow-sm p-5">
-          <h3 className="text-lg font-semibold border-l-4 border-blue-500 pl-3 mb-4">
-            Account Statistics
-          </h3>
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <span>Total Bookings</span>
-              <span className="font-semibold">—</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Active Tickets</span>
-              <span className="font-semibold">—</span>
-            </div>
+        <div className="profile-card">
+          <h3>Account Statistics</h3>
+          <div className="stat-row">
+            <span className="stat-label">Total Bookings</span>
+            <span className="stat-number">{stats.bookings}</span>
+          </div>
+          <div className="stat-row">
+            <span className="stat-label">Active Tickets</span>
+            <span className="stat-number">{stats.activeTickets}</span>
           </div>
         </div>
 
-        {/* Optional: Recent Activity */}
-        <div className="bg-white rounded-2xl shadow-sm p-5 lg:col-span-2">
-          <h3 className="text-lg font-semibold border-l-4 border-blue-500 pl-3 mb-4">
-            Recent Activity
-          </h3>
-          <div className="text-sm text-gray-500">No recent activity to display.</div>
+        {/* Recent Activity */}
+        <div className="profile-card">
+          <h3>Recent Activity</h3>
+          <div className="info-row">
+            <span className="info-label">No recent activity to display.</span>
+          </div>
         </div>
       </div>
 
-      <div className="flex justify-end gap-4 mt-6">
-        <button className="px-6 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-50 transition">
-          EDIT
-        </button>
+      <div className="profile-actions">
+        <button onClick={openEditModal} className="btn-edit">EDIT</button>
       </div>
-    </main>
+
+      {/* Edit Profile Modal (same as before) */}
+      {showEditModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">Edit Profile</div>
+            <form onSubmit={handleUpdateProfile}>
+              <div className="modal-body">
+                {editError && <div className="alert error mb-3">{editError}</div>}
+                <div className="form-group">
+                  <label>Full Name</label>
+                  <input type="text" name="name" value={editForm.name} onChange={handleEditChange} className="form-input" required />
+                </div>
+                <div className="form-group">
+                  <label>Email Address</label>
+                  <input type="email" name="email" value={editForm.email} onChange={handleEditChange} className="form-input" required />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="button" onClick={closeModal} className="btn cancel">Cancel</button>
+                <button type="submit" disabled={editLoading} className="btn save">{editLoading ? 'Saving...' : 'Save Changes'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

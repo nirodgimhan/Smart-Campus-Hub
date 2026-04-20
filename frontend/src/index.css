@@ -609,66 +609,121 @@ a:focus-visible {
   }
 }
 
-/* -----------------------------------------------------
-   Auth Pages (Login / Signup)
------------------------------------------------------- */
+/* =====================================================
+   LOGIN & SIGNUP PAGES — MODERN GLASS CARD STYLES
+   Covers: full‑page background, card, form fields,
+           buttons, social login, alerts, responsiveness
+   ===================================================== */
+
+/* ── Shared Page Layout ── */
 .login-ui-page,
 .signup-ui-page {
-  min-height: 100vh;
+  min-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-base);
-  background-image: radial-gradient(circle at 0% 0%, rgba(79, 70, 229, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+  
   padding: 2rem;
+  position: relative;
+ 
 }
 
+/* Decorative blurred circles (same as booking form) */
+.login-ui-page::before,
+.signup-ui-page::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 400px;
+  height: 400px;
+  background: var(--accent);
+  filter: blur(100px);
+  opacity: 0.2;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.login-ui-page::after,
+.signup-ui-page::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: var(--secondary);
+  filter: blur(120px);
+  opacity: 0.2;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+/* ── Card (Glassmorphism) ── */
 .login-ui-card,
 .signup-ui-card {
   width: 100%;
   max-width: 440px;
-  background: var(--bg-surface);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-lg);
-  padding: 2.5rem;
+  padding: 2rem;
   box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--glass-border);
   animation: fadeIn 0.5s ease-out;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.2s;
 }
 
+.login-ui-card:hover,
+.signup-ui-card:hover {
+  transform: translateY(-4px);
+}
+
+/* ── Header ── */
 .login-ui-header,
 .signup-ui-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .login-ui-header h2,
 .signup-ui-header h2 {
   font-size: 2rem;
+  font-weight: 700;
   color: var(--text-main);
   margin-bottom: 0.5rem;
   background: linear-gradient(135deg, var(--primary), var(--secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
 }
 
 .login-ui-header p,
 .signup-ui-header p {
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
+/* ── Alert Messages ── */
 .login-ui-alert,
 .signup-ui-alert {
   background: #fef2f2;
-  color: #ef4444;
+  color: #dc2626;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
   border: 1px solid #fecaca;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
+/* ── Form Styles ── */
 .login-ui-form,
 .signup-ui-form {
   display: flex;
@@ -685,21 +740,22 @@ a:focus-visible {
 
 .login-ui-field label,
 .signup-ui-field label {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.85rem;
+  font-weight: 600;
   color: var(--text-main);
 }
 
 .login-ui-field input,
 .signup-ui-field input {
+  width: 100%;
   padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-strong);
-  background: var(--bg-base);
+  border: 1.5px solid var(--border-strong);
+  background: var(--bg-surface);
   color: var(--text-main);
-  font-family: inherit;
+  font-family: 'Inter', sans-serif;
   font-size: 0.95rem;
-  transition: var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .login-ui-field input:focus,
@@ -707,28 +763,35 @@ a:focus-visible {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-light);
+  background: var(--bg-surface);
 }
 
+/* Hint text (signup password) */
 .signup-ui-hint {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
+  margin-top: 0.25rem;
 }
 
+/* Forgot password link */
 .login-ui-forgot {
   text-align: right;
 }
 
 .login-ui-forgot a {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   color: var(--primary);
   text-decoration: none;
   font-weight: 500;
+  transition: color 0.2s;
 }
 
 .login-ui-forgot a:hover {
   text-decoration: underline;
+  color: var(--primary-hover);
 }
 
+/* ── Primary Buttons ── */
 .login-ui-btn-primary,
 .signup-ui-btn-primary {
   background: linear-gradient(135deg, var(--primary), var(--primary-hover));
@@ -736,22 +799,29 @@ a:focus-visible {
   padding: 0.75rem;
   border-radius: var(--radius-md);
   border: none;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
-  transition: var(--transition-fast);
-  margin-top: 0.5rem;
+  transition: all var(--transition-fast);
   text-align: center;
-  display: block;
   width: 100%;
+  margin-top: 0.5rem;
+  letter-spacing: 0.5px;
 }
 
-.login-ui-btn-primary:hover,
-.signup-ui-btn-primary:hover {
+.login-ui-btn-primary:hover:not(:disabled),
+.signup-ui-btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
 }
 
+.login-ui-btn-primary:disabled,
+.signup-ui-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Divider ── */
 .login-ui-divider,
 .signup-ui-divider {
   display: flex;
@@ -773,9 +843,11 @@ a:focus-visible {
 .signup-ui-divider span {
   padding: 0 1rem;
   color: var(--text-muted);
-  font-size: 0.875rem;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
+/* ── Social Buttons ── */
 .login-ui-social,
 .signup-ui-social {
   display: flex;
@@ -788,48 +860,83 @@ a:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
+  gap: 0.6rem;
+  padding: 0.7rem;
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-strong);
-  background: transparent;
-  font-weight: 500;
+  border: 1.5px solid var(--border-strong);
+  background: var(--bg-surface);
+  font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: var(--transition-fast);
+  transition: all var(--transition-fast);
   color: var(--text-main);
-}
-
-.login-ui-social-btn:hover,
-.signup-ui-social-btn:hover {
-  background: var(--bg-base);
-  transform: translateY(-2px);
 }
 
 .login-ui-social-btn svg,
 .signup-ui-social-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   fill: currentColor;
 }
 
+.login-ui-social-btn.google:hover,
+.signup-ui-social-btn.google:hover {
+  background: #fef2f2;
+  border-color: #ea4335;
+  color: #ea4335;
+}
+
+.login-ui-social-btn.facebook:hover,
+.signup-ui-social-btn.facebook:hover {
+  background: #e8f0fe;
+  border-color: #1877f2;
+  color: #1877f2;
+}
+
+/* ── Footer Links ── */
 .login-ui-footer,
 .signup-ui-footer {
   text-align: center;
-  margin-top: 2rem;
-  font-size: 0.95rem;
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
   color: var(--text-muted);
 }
 
 .login-ui-footer a,
 .signup-ui-footer a {
   color: var(--primary);
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
+  transition: color 0.2s;
 }
 
 .login-ui-footer a:hover,
 .signup-ui-footer a:hover {
   text-decoration: underline;
+  color: var(--primary-hover);
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .login-ui-page,
+  .signup-ui-page {
+    padding: 1rem;
+  }
+
+  .login-ui-card,
+  .signup-ui-card {
+    padding: 1.5rem;
+  }
+
+  .login-ui-header h2,
+  .signup-ui-header h2 {
+    font-size: 1.6rem;
+  }
+
+  .login-ui-social,
+  .signup-ui-social {
+    flex-direction: column;
+  }
 }
 
 /* =====================================================
@@ -6267,7 +6374,7 @@ a:focus-visible {
 /* ── Page Container ── */
 .about-page {
   width: 100%;
-  overflow-x: hidden;
+ 
 }
 
 /* ── Hero Section (no gap with header) ── */
@@ -6570,12 +6677,13 @@ a:focus-visible {
 /* ── Page Container ── */
 .privacy-page {
   width: 100%;
-  overflow-x: hidden;
+  
 }
 
 /* ── Hero Section (no gap with header) ── */
 .privacy-hero {
   background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  
   padding: calc(var(--header-height) + 2rem) 2rem 3rem;
   text-align: center;
   color: white;
@@ -6811,5 +6919,560 @@ a:focus-visible {
 
   .privacy-section h2 {
     font-size: 1.1rem;
+  }
+}
+
+
+
+
+/* =====================================================
+   NOTIFICATIONS PAGE — MODERN STYLING
+   Covers: gradient header, notification list, items,
+           unread badges, empty state, loading, error
+   ===================================================== */
+
+/* ── Page Container ── */
+.notifications-page {
+  max-width: 1000px;
+  margin: 0 auto;
+ 
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* ── Gradient Header (consistent with other pages) ── */
+.notifications-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2rem 2.5rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  border-radius: var(--radius-lg);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(79, 70, 229, 0.28);
+  margin-bottom: 2rem;
+}
+
+.notifications-header::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -5%;
+  width: 240px;
+  height: 240px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+  filter: blur(30px);
+  pointer-events: none;
+}
+
+.notifications-header::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -5%;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 50%;
+  filter: blur(25px);
+  pointer-events: none;
+}
+
+.notifications-title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 0.3rem;
+}
+
+.notifications-subtitle {
+  font-size: 0.92rem;
+  opacity: 0.88;
+}
+
+.btn-mark-all {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-mark-all:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ── Notifications List ── */
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── Individual Notification Item ── */
+.notification-item {
+  display: flex;
+  gap: 1rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  border: 1px solid var(--border-light);
+  transition: all 0.2s;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.notification-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-light);
+}
+
+.notification-item.unread {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.03), transparent);
+  border-left: 4px solid var(--primary);
+}
+
+.notification-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-base);
+  border-radius: var(--radius-md);
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-message {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.notification-footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.notification-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.unread-badge {
+  background: var(--primary);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+
+/* ── Empty State ── */
+.empty-notifications {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border-strong);
+}
+
+.empty-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.empty-notifications h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.empty-notifications p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  max-width: 300px;
+}
+
+/* ── Loading State ── */
+.notifications-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1rem;
+}
+
+.notifications-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--primary-light);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* ── Error State ── */
+.notifications-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  color: #dc2626;
+  margin-top: 2rem;
+}
+
+.error-icon {
+  font-size: 1.2rem;
+}
+
+/* ── Responsive Design ── */
+@media (max-width: 768px) {
+  .notifications-page {
+    padding: 1rem;
+  }
+
+  .notifications-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+  }
+
+  .notifications-title {
+    font-size: 1.6rem;
+  }
+
+  .btn-mark-all {
+    align-self: stretch;
+    text-align: center;
+  }
+
+  .notification-item {
+    padding: 1rem;
+  }
+
+  .notification-icon {
+    font-size: 1.4rem;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .notification-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .notification-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+
+
+
+
+/* =====================================================
+   PROFILE PAGES (User & Admin) — MODERN DESIGN
+   Covers: profile header, info cards, stats, quick actions,
+           edit modal, responsive layouts
+   ===================================================== */
+
+/* ── Page Container ── */
+.profile-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* ── Profile Header Card ── */
+.profile-header {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  padding: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-smooth);
+}
+
+.profile-header:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.profile-info h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+}
+
+.profile-info p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.profile-badge {
+  margin-left: auto;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.profile-badge.admin {
+  background: #ede9fe;
+  color: var(--accent);
+}
+
+/* ── Grid Layout ── */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* ── Cards (Info & Stats) ── */
+.profile-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.profile-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.profile-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  border-left: 4px solid var(--primary);
+  padding-left: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 0.9rem;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.info-value {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* ── Stats Row (used inside card) ── */
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  font-size: 0.9rem;
+}
+
+.stat-label {
+  color: var(--text-muted);
+}
+
+.stat-number {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 1rem;
+}
+
+/* ── Quick Actions (Admin only) ── */
+.quick-actions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.quick-action-item {
+  margin-bottom: 0.5rem;
+}
+
+.quick-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--bg-base);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.quick-action-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateX(4px);
+}
+
+/* ── Action Buttons (Edit / Deactivate) ── */
+.profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-edit {
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  background: transparent;
+  border: 1.5px solid var(--border-strong);
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-edit:hover {
+  border-color: var(--text-main);
+  color: var(--text-main);
+  background: var(--bg-base);
+  transform: translateY(-2px);
+}
+
+.btn-deactivate {
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  background: #fee2e2;
+  border: none;
+  color: #dc2626;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-deactivate:hover {
+  background: #dc2626;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+}
+
+/* ── Loading State ── */
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+/* ── Modal (reuse existing modal styles) ── */
+/* The modal classes (.modal-overlay, .modal, .modal-header, etc.) 
+   are already defined in previous answers (ManageUsers, etc.) 
+   and work here as well. Ensure they are present in your CSS. */
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 1rem;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-badge {
+    margin-left: 0;
+    align-self: center;
+  }
+
+  .profile-avatar {
+    width: 70px;
+    height: 70px;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-actions {
+    justify-content: stretch;
+  }
+
+  .btn-edit,
+  .btn-deactivate {
+    flex: 1;
+    text-align: center;
   }
 }

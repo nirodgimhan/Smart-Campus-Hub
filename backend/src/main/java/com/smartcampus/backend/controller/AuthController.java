@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,7 +47,7 @@ public class AuthController {
         private JwtUtils jwtUtils;
 
         @Autowired
-        private NotificationService notificationService; // <-- ADDED
+        private NotificationService notificationService;
 
         // ===== EXISTING METHOD – UNCHANGED =====
         @GetMapping("/me")
@@ -116,5 +117,33 @@ public class AuthController {
                                 userDetails.getEmail(),
                                 userDetails.getName(),
                                 roles));
+        }
+
+        // ===== UPDATE PROFILE ENDPOINT (for current authenticated user) =====
+        @PutMapping("/update")
+        public ResponseEntity<?> updateProfile(@AuthenticationPrincipal UserDetailsImpl currentUser,
+                        @RequestBody Map<String, String> updates) {
+                User user = userService.getUserById(currentUser.getId());
+
+                String newName = updates.get("name");
+                String newEmail = updates.get("email");
+
+                if (newName != null && !newName.trim().isEmpty()) {
+                        user.setName(newName.trim());
+                }
+
+                if (newEmail != null && !newEmail.trim().isEmpty()) {
+                        String trimmedEmail = newEmail.trim();
+                        // Check if the new email is different from current and already exists
+                        if (!user.getEmail().equals(trimmedEmail) && userRepository.existsByEmail(trimmedEmail)) {
+                                return ResponseEntity.badRequest()
+                                                .body(new MessageResponseDTO(
+                                                                "Email is already in use by another account"));
+                        }
+                        user.setEmail(trimmedEmail);
+                }
+
+                userRepository.save(user);
+                return ResponseEntity.ok(user);
         }
 }
