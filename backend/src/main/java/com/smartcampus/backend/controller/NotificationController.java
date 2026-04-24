@@ -29,7 +29,7 @@ public class NotificationController {
         notificationService.markAsRead(id, currentUser.getId());
     }
 
-    // Mark all notifications as read for the current user
+    // Mark all notifications as read for the current user     
     @PutMapping("/read-all")
     public void markAllAsRead(@AuthenticationPrincipal UserDetailsImpl currentUser) {
         notificationService.markAllAsRead(currentUser.getId());

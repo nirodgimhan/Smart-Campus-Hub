@@ -12,9 +12,10 @@ public interface NotificationRepository extends MongoRepository<Notification, St
     // Get all unread notifications for a user
     List<Notification> findByUserIdAndIsReadFalse(String userId);
 
-    // Delete all notifications for a user (e.g., when user account is deleted)
+     // Delete all notifications for a user (e.g., when user account is deleted)
     void deleteByUserId(String userId);
 
     // Count unread notifications for a user (for badge)
     long countByUserIdAndIsReadFalse(String userId);
+
 }
