@@ -15,12 +15,12 @@ public class NotificationController {
 
     @Autowired
     private NotificationService notificationService;
-
-    // Get all notifications for the current user
+  // Get all notifications for the current user
     @GetMapping
     public List<Notification> getMyNotifications(@AuthenticationPrincipal UserDetailsImpl currentUser) {
         return notificationService.getUserNotifications(currentUser.getId());
     }
+
 
     // Mark a single notification as read
     @PutMapping("/{id}/read")
