@@ -17,7 +17,7 @@ public class NotificationService {
     @Autowired
     private UserRepository userRepository; // needed to fetch admin users
 
-    public void createNotification(String userId, String message, Notification.NotificationType type,
+      public void createNotification(String userId, String message, Notification.NotificationType type,
             String relatedId) {
         Notification notification = new Notification();
         notification.setUserId(userId);
