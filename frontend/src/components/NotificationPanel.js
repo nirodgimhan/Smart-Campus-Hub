@@ -17,7 +17,6 @@ const NotificationPanel = ({ onClose }) => {
     await markNotificationRead(id);
     loadNotifications();
   };
-
   const remove = async (id) => {
     await deleteNotification(id);
     loadNotifications();
