@@ -27,7 +27,7 @@ Build Tools | Maven (backend), npm (frontend)
 ## Prerequisites
 
 - **Java 17+**
-- **Maven** (or use the included Maven wrapper `mvnw.cmd`)
+- **Maven** (or use the included Maven wrapper `.\mvnw.cmd`)
 - **Node.js 18+ & npm**
 - **MongoDB** (local installation or cloud Atlas URI)
 
